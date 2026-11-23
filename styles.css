@@ -37,11 +37,11 @@ body{font-family:'Lato',sans-serif;color:var(--navy);text-align:center;line-heig
 #main-content{position:relative;max-width:480px;margin:0 auto;overflow:hidden;box-shadow:0 0 40px rgba(28,58,140,.2)}
 .page{position:relative;max-width:480px;margin:0 auto;overflow:hidden;isolation:isolate;
   background:var(--destellos),linear-gradient(#d3e8fb 0%,#eaf4fe 40%,#f6faff 100%)}
-.page::before{content:"";position:absolute;left:0;right:0;top:0;z-index:-1;pointer-events:none;aspect-ratio:736/597;
+.page::before{content:"";position:absolute;left:0;right:0;top:0;z-index:-1;pointer-events:none;aspect-ratio:675/430;
   background:var(--img-arriba) top center/100% 100% no-repeat;
   -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 65%,transparent 100%);
           mask-image:linear-gradient(to bottom,#000 0,#000 65%,transparent 100%)}
-.page::after{content:"";position:absolute;left:0;right:0;bottom:0;z-index:-1;pointer-events:none;aspect-ratio:736/597;
+.page::after{content:"";position:absolute;left:0;right:0;bottom:0;z-index:-1;pointer-events:none;aspect-ratio:675/510;
   background:var(--img-abajo) bottom center/100% 100% no-repeat;
   -webkit-mask-image:linear-gradient(to top,#000 0,#000 65%,transparent 100%);
           mask-image:linear-gradient(to top,#000 0,#000 65%,transparent 100%)}
