@@ -8,7 +8,7 @@ const CONFIG = {
   alias: "Almi.faun2026",                     // alias o CBU. Vacío = no aparece la sección de regalos
   cvu: "",                                    // CVU o CBU. Vacío = no aparece esa fila
   titular: "Alma Guadalupe Faundez",          // nombre del titular de la cuenta
-  albumUrl: "",                               // PENDIENTE: link del álbum compartido (QR y botón). Vacío = no aparece "Quiero ver tus fotos"
+  albumUrl: "https://photos.app.goo.gl/Ge8dyviMMyRLk1TS7",                               // PENDIENTE: link del álbum compartido (QR y botón). Vacío = no aparece "Quiero ver tus fotos"
   confirmarAntes: "Confirmar antes del 20 de marzo",   // Vacío = no aparece
   mensajeWa: "Hola! Confirmo mi asistencia a los XV de Alma"
 };
