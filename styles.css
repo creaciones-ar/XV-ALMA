@@ -36,15 +36,24 @@ body{font-family:'Lato',sans-serif;color:var(--navy);text-align:center;line-heig
    ===================================================== */
 #main-content{position:relative;max-width:480px;margin:0 auto;overflow:hidden;box-shadow:0 0 40px rgba(28,58,140,.2)}
 .page{position:relative;max-width:480px;margin:0 auto;overflow:hidden;isolation:isolate;
-  background:var(--img-arriba) top center/100% auto no-repeat,var(--destellos),linear-gradient(#d3e8fb 0%,#eaf4fe 40%,#f6faff 100%)}
-.page::after{content:"";position:absolute;left:0;right:0;bottom:0;z-index:-1;pointer-events:none;height:calc(var(--col)*1.2);
-  background:var(--img-abajo) bottom center/100% auto no-repeat;
-  -webkit-mask-image:linear-gradient(to bottom,transparent 0,transparent 20%,#000 55%);mask-image:linear-gradient(to bottom,transparent 0,transparent 20%,#000 55%)}
+  background:var(--destellos),linear-gradient(#d3e8fb 0%,#eaf4fe 40%,#f6faff 100%)}
+.page::before{content:"";position:absolute;left:0;right:0;top:0;z-index:-1;pointer-events:none;aspect-ratio:736/597;
+  background:var(--img-arriba) top center/100% 100% no-repeat;
+  -webkit-mask-image:linear-gradient(to bottom,#000 0,#000 65%,transparent 100%);
+          mask-image:linear-gradient(to bottom,#000 0,#000 65%,transparent 100%)}
+.page::after{content:"";position:absolute;left:0;right:0;bottom:0;z-index:-1;pointer-events:none;aspect-ratio:736/597;
+  background:var(--img-abajo) bottom center/100% 100% no-repeat;
+  -webkit-mask-image:linear-gradient(to top,#000 0,#000 65%,transparent 100%);
+          mask-image:linear-gradient(to top,#000 0,#000 65%,transparent 100%)}
 .cover,.story-section,.date-section,.center-section,.place-section,.duo,.rsvp,.closing{background:none}
 
-/* separación entre secciones: línea de destellos */
-.respiro{position:relative;height:var(--respiro);pointer-events:none}
-.respiro::before{content:"✦  ✧  ✦";position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);letter-spacing:.6em;padding-left:.6em;font-size:.8rem;color:var(--silver)}
+/* separación entre secciones: aire + imagen del centro con degradé */
+.respiro{position:relative;height:var(--respiro);margin:-8px 0;pointer-events:none}
+.respiro::before{content:"";position:absolute;inset:0;background:var(--img-centro) center/cover no-repeat;opacity:.9;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 38%,#000 62%,transparent 100%);
+          mask-image:linear-gradient(to bottom,transparent 0,#000 38%,#000 62%,transparent 100%)}
+.respiro:nth-of-type(even)::before{background-position:center 15%;transform:scaleX(-1)}
+.respiro:nth-of-type(3n)::before{background-position:center 85%}
 
 /* =====================================================
    TIPOGRAFÍA GLOBAL
