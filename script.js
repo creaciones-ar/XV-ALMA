@@ -78,22 +78,28 @@ $('btn-repeat').onclick = e => e.currentTarget.classList.toggle('on');
 $('btn-shuffle').onclick = e => e.currentTarget.classList.toggle('on');
 $('yt-player').style.cssText = 'position:fixed;left:-9999px;width:1px;height:1px';
 
-/* ===== Abrir sobre ===== */
-$('open-btn').addEventListener('click', function () {
-  const env = $('envelope'), screen = $('welcome-screen');
-  if (env.classList.contains('open')) return;
-  env.classList.add('open');
-  screen.classList.add('opening');
-  wantPlay = true; if (ready) yt.playVideo();
+/* ===== Abrir: al tocar, arranca el video y la música; cuando termina entra la invitación ===== */
+let started = false, entered = false;
+function enterInvitation() {
+  if (entered) return; entered = true;
+  const screen = $('welcome-screen');
+  screen.style.opacity = '0';
   setTimeout(() => {
-    screen.style.opacity = '0';
-    setTimeout(() => {
-      screen.classList.add('hidden');
-      $('main-content').classList.remove('hidden');
-      fitStory();
-      window.scrollTo(0, 0);
-    }, 600);
-  }, 2900);                                         // tiempo que dura la animación del sobre
+    screen.classList.add('hidden');
+    $('main-content').classList.remove('hidden');
+    fitStory();
+    window.scrollTo(0, 0);
+  }, 600);
+}
+$('open-btn').addEventListener('click', function () {
+  if (started) return; started = true;           // evita doble toque
+  const v = $('intro-video');
+  $('welcome-screen').classList.add('opening');
+  wantPlay = true; if (ready) yt.playVideo();     // la música arranca con el toque
+  v.muted = true;                                 // el sonido es la canción elegida, no el del video
+  v.addEventListener('ended', enterInvitation);
+  v.play().catch(enterInvitation);                // si el celular no puede reproducir el video, entra igual
+  setTimeout(enterInvitation, 12500);             // seguro: entra aunque el video falle (el video dura ~10 s)
 });
 
 /* ===== Cuenta regresiva ===== */
