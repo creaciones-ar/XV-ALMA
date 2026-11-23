@@ -1,15 +1,16 @@
 /* ===== CONFIGURACIÓN (editar solo acá) ===== */
 const CONFIG = {
-  fecha: "December 13, 2026 21:00:00",        // HORA PROVISORIA (21:00): confirmar con Isabella
-  youtubeId: "j3ObHjm1fAE",                               // código del video de YouTube de la canción. Vacío = no aparece el reproductor
-  inicio: 30,                                  // segundo desde el que suena la canción (30 = salta los primeros 30 s de intro)
-  whatsapp: "5491165286830",                   // 54 + 9 + número (confirmar que sea el WhatsApp)
-  mapsUrl: "https://maps.app.goo.gl/y8uJtqJ5FoqePBLZ6",                                 // link de Google Maps del salón. Vacío = no aparece el botón
-  alias: "isabella",                                   // alias o CBU. Vacío = no aparece la sección de regalos
-  albumUrl: "https://photos.app.goo.gl/WpPPTVfGd7tURbah6",   // álbum compartido de Isabella (QR y botón)
-  playlistUrl: "https://open.spotify.com/playlist/5Sf5nsXzMx0s9bSrUkwPwW?si=f115921d2ada4890&pt=f36ebe1e791f43576a4096c71f848620",   // playlist de Isabella
-  confirmarAntes: "Confirmar antes del 1 de diciembre",                          // por ejemplo "Confirmar antes del 1 de diciembre". Vacío = no aparece
-  mensajeWa: "Hola! Confirmo mi asistencia a los XV de Isabella"
+  fecha: "April 10, 2027 21:00:00",           // sábado 10 de abril de 2027, 21:00
+  youtubeId: "j3ObHjm1fAE",                   // PROVISORIA (la de Isabella): preguntar a Alma qué canción quiere. Vacío = no aparece el reproductor
+  inicio: 30,                                 // segundo desde el que suena la canción (30 = salta los primeros 30 s de intro)
+  whatsapp: "5491121825254",                  // 54 + 9 + número
+  mapsUrl: "https://www.google.com/maps/place/Rio+Senguer+746,+Q8300+Neuqu%C3%A9n/@-38.9794053,-68.072554,17z/data=!3m1!4b1!4m6!3m5!1s0x960a323fc7a4d275:0xd9fa369a3ff6e51c!8m2!3d-38.9794053!4d-68.0699791!16s%2Fg%2F11fcv1mm5b?entry=ttu&g_ep=EgoyMDI2MTExOC4xIKXMDSoASAFQAw%3D%3D",   // link de Google Maps. Vacío = no aparece el botón
+  alias: "Almi.faun2026",                     // alias o CBU. Vacío = no aparece la sección de regalos
+  cvu: "",                                    // CVU o CBU. Vacío = no aparece esa fila
+  titular: "Alma Guadalupe Faundez",          // nombre del titular de la cuenta
+  albumUrl: "",                               // PENDIENTE: link del álbum compartido (QR y botón). Vacío = no aparece "Quiero ver tus fotos"
+  confirmarAntes: "Confirmar antes del 20 de marzo",   // Vacío = no aparece
+  mensajeWa: "Hola! Confirmo mi asistencia a los XV de Alma"
 };
 
 const $ = id => document.getElementById(id);
@@ -18,9 +19,15 @@ const $ = id => document.getElementById(id);
 const show = (...ids) => ids.forEach(i => $(i).classList.remove('hidden'));
 $('wa-btn').href = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(CONFIG.mensajeWa)}`;
 if (CONFIG.mapsUrl) { $('maps-btn').href = CONFIG.mapsUrl; show('maps-btn'); }
-if (CONFIG.alias) { $('alias').textContent = CONFIG.alias; show('gift-section', 'gift-respiro'); }
+if (CONFIG.alias || CONFIG.cvu) {
+  $('alias').textContent = CONFIG.alias;
+  $('cvu').textContent = CONFIG.cvu;
+  $('gift-title').textContent = CONFIG.titular;
+  if (!CONFIG.alias) $('row-alias').classList.add('hidden');
+  if (!CONFIG.cvu) $('row-cvu').classList.add('hidden');
+  show('gift-section', 'gift-respiro');
+}
 if (CONFIG.confirmarAntes) { $('confirm-note').textContent = CONFIG.confirmarAntes; show('confirm-note'); }
-if (CONFIG.playlistUrl) { $('playlist-link').href = CONFIG.playlistUrl; show('playlist-section', 'playlist-respiro'); }
 if (CONFIG.albumUrl) {
   $('album-link').href = CONFIG.albumUrl;
   show('album-section', 'album-respiro');
@@ -50,7 +57,7 @@ window.onYouTubeIframeAPIReady = () => {
     events: {
       onReady: () => { ready = true; if (wantPlay) yt.playVideo(); },
       onStateChange: e => {
-        if (e.data === YT.PlayerState.ENDED && $('btn-repeat').classList.contains('on')) { yt.seekTo(CONFIG.inicio, true); yt.playVideo(); return; }   // al terminar, vuelve a empezar sin la intro
+        if (e.data === YT.PlayerState.ENDED && $('btn-repeat').classList.contains('on')) { yt.seekTo(CONFIG.inicio, true); yt.playVideo(); return; }
         const playing = e.data === YT.PlayerState.PLAYING;
         playBtn.classList.toggle('playing', playing);
         clearInterval(ticker);
@@ -62,9 +69,8 @@ window.onYouTubeIframeAPIReady = () => {
   });
 };
 const isPlaying = () => ready && yt.getPlayerState() === 1;
-/* La barra muestra solo la parte que suena: empieza vacía en el segundo 'inicio' y se llena hasta el final de la canción */
 const span = () => Math.max(1, yt.getDuration() - CONFIG.inicio);
-let userPaused = false, needResume = false;     // userPaused: pausó a propósito
+let userPaused = false, needResume = false;
 playBtn.onclick = () => { if (!ready) return; if (isPlaying()) { userPaused = true; yt.pauseVideo(); } else { userPaused = false; yt.playVideo(); } };
 bar.oninput = () => ready && yt.seekTo(CONFIG.inicio + span() * bar.value / 100, true);
 $('btn-prev').onclick = $('btn-next').onclick = () => { if (!ready) return; userPaused = false; yt.seekTo(CONFIG.inicio, true); yt.playVideo(); };
@@ -72,13 +78,13 @@ $('btn-repeat').onclick = e => e.currentTarget.classList.toggle('on');
 $('btn-shuffle').onclick = e => e.currentTarget.classList.toggle('on');
 $('yt-player').style.cssText = 'position:fixed;left:-9999px;width:1px;height:1px';
 
-/* ===== Abrir sobre: tocar el sello -> se rompe, se abre la solapa, sube la carta, entra la invitación ===== */
+/* ===== Abrir sobre ===== */
 $('open-btn').addEventListener('click', function () {
   const env = $('envelope'), screen = $('welcome-screen');
-  if (env.classList.contains('open')) return;      // evita doble toque
+  if (env.classList.contains('open')) return;
   env.classList.add('open');
   screen.classList.add('opening');
-  wantPlay = true; if (ready) yt.playVideo();      // la música arranca con el toque
+  wantPlay = true; if (ready) yt.playVideo();
   setTimeout(() => {
     screen.style.opacity = '0';
     setTimeout(() => {
@@ -104,25 +110,35 @@ const tick = () => {
 const timer = setInterval(tick, 1000);
 tick();
 
-/* ===== Copiar alias ===== */
-$('copy-alias').onclick = async e => {
-  const btn = e.currentTarget, txt = $('alias').textContent.trim();
-  try {
-    await navigator.clipboard.writeText(txt);
-  } catch {
-    const t = document.createElement('textarea');
-    t.value = txt; document.body.appendChild(t); t.select();
-    try { document.execCommand('copy'); } catch { }
-    t.remove();
-  }
-  btn.textContent = '¡Copiado!';
-  setTimeout(() => btn.textContent = 'Copiar alias', 2000);
-};
+/* ===== Ventana de regalo + copiar alias / CVU ===== */
+const modal = $('gift-modal');
+const openGift = () => { modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; };
+const closeGift = () => { modal.classList.add('hidden'); document.body.style.overflow = ''; };
+$('open-gift').onclick = openGift;
+$('close-gift').onclick = closeGift;
+modal.addEventListener('click', e => { if (e.target === modal) closeGift(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGift(); });
+
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.onclick = async () => {
+    const txt = $(btn.dataset.copy).textContent.trim();
+    try {
+      await navigator.clipboard.writeText(txt);
+    } catch {
+      const t = document.createElement('textarea');
+      t.value = txt; document.body.appendChild(t); t.select();
+      try { document.execCommand('copy'); } catch { }
+      t.remove();
+    }
+    btn.textContent = '¡Copiado!';
+    setTimeout(() => btn.textContent = btn.dataset.label, 2000);
+  };
+});
 
 /* ===== Fotos: busca automáticamente el archivo correcto =====
    Prueba: foto3.png, "foto 3.png", foto_3.png, .jpg, .jpeg, .webp (y mayúsculas).
-   Las que tienen data-framed (marco de Canva) reciben la clase "framed". */
-const V = '15';
+   Si una foto no existe todavía, se oculta (y la sección se acomoda sola). */
+const V = '1';
 const NAMES = n => [`foto${n}`, `foto ${n}`, `foto_${n}`];
 const EXTS = ['png', 'jpg', 'jpeg', 'webp', 'PNG', 'JPG', 'JPEG'];
 
@@ -137,7 +153,14 @@ function loadPhoto(img) {
   const framed = img.hasAttribute('data-framed');
   let i = 0;
   const next = () => {
-    if (i >= list.length) { console.warn('No se encontró la foto', img.dataset.foto); return; }
+    if (i >= list.length) {
+      console.warn('No se encontró la foto', img.dataset.foto);
+      img.style.display = 'none';
+      const sec = img.closest('section');
+      if (sec && !sec.querySelector('img[data-foto]:not([style*="none"])')) sec.classList.add('no-photo');
+      fitStory();
+      return;
+    }
     const probe = new Image();
     const url = list[i++];
     probe.onload = () => { img.src = url; if (framed) img.classList.add('framed'); };
@@ -149,15 +172,12 @@ function loadPhoto(img) {
 
 document.querySelectorAll('img[data-foto]').forEach(loadPhoto);
 
-
-/* ===== Texto de la historia: mismo alto que las dos fotos =====
-   Ajusta el tamaño de letra hasta que el texto empiece a la altura de la 1ª foto
-   y termine a la altura de la 2ª (en cualquier celular). */
+/* ===== Texto de la historia: mismo alto que las dos fotos ===== */
 function fitStory() {
   const t = document.querySelector('.story-text');
   const box = document.querySelector('.story-photos');
-  if (!t || !box || !box.offsetHeight) return;      // todavía oculto o sin cargar
-  const target = box.offsetHeight * 0.90;           // 0.90 = descuenta el borde transparente de los marcos
+  if (!t || !box || !box.offsetHeight) return;
+  const target = box.offsetHeight * 0.90;
   let lo = 11, hi = 24;
   for (let i = 0; i < 12; i++) {
     const mid = (lo + hi) / 2;
@@ -170,11 +190,10 @@ document.querySelectorAll('.story-photos img').forEach(i => i.addEventListener('
 window.addEventListener('resize', fitStory);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitStory);
 
-
 /* ===== Al volver de Google Maps u otra app, la música sigue sola ===== */
 function resumeMusic() {
   if (!ready || !wantPlay || userPaused || isPlaying()) return;
-  yt.playVideo(); needResume = true;              // si el celular lo bloquea, se reanuda con el próximo toque
+  yt.playVideo(); needResume = true;
 }
 document.addEventListener('visibilitychange', () => { if (!document.hidden) setTimeout(resumeMusic, 300); });
 window.addEventListener('pageshow', () => setTimeout(resumeMusic, 300));
@@ -184,7 +203,7 @@ document.addEventListener('touchend', e => {
   if (!userPaused && !isPlaying()) yt.playVideo();
 }, { passive: true });
 
-/* ===== El ícono del calendario se anima una sola vez: se reinicia al llegar a verlo ===== */
+/* ===== El ícono del calendario se anima una sola vez ===== */
 if ('IntersectionObserver' in window) {
   const io = new IntersectionObserver(es => es.forEach(e => {
     if (e.isIntersecting && e.target.getAttribute('src')) { const im = e.target; im.src = im.src.split('?')[0] + '?t=' + Date.now(); }
@@ -192,7 +211,7 @@ if ('IntersectionObserver' in window) {
   document.querySelectorAll('img[data-replay]').forEach(i => io.observe(i));
 }
 
-/* ===== Íconos animados: busca el archivo con o sin "_1" en el nombre (icono-camara_1.gif o icono-camara.gif) ===== */
+/* ===== Íconos animados: busca el archivo con o sin "_1" en el nombre ===== */
 document.querySelectorAll('img[data-icon]').forEach(img => {
   const n = img.dataset.icon, list = [`${n}_1.gif`, `${n}.gif`, `${n}_1.GIF`, `${n}.GIF`];
   let i = 0;
